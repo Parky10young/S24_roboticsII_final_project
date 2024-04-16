@@ -1,10 +1,12 @@
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped, Twist
+from geometry_msgs.msg import PoseStamped, Twist, Quaternion
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid
 from tf_transformations import quaternion_from_euler
+
+
 
 class Nav2TrajectoryPlanner(Node):
     def __init__(self):
@@ -34,8 +36,12 @@ class Nav2TrajectoryPlanner(Node):
         send_goal_future.add_done_callback(self.goal_response_callback)
 
     def orientation_around_z_axis(self, theta):
-        return quaternion_from_euler(0, 0, theta)
-
+        quaternion = Quaternion()
+        quaternion.w = cos(theta / 2.0)
+        quaternion.x = 0.0
+        quaternion.y = 0.0
+        quaternion.z = sin(theta / 2.0)
+        return quaternion
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
