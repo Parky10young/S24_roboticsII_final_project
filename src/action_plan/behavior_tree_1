@@ -102,9 +102,9 @@ static const char* xml_text = R"(
             <LearnObject   name="learn_ok"/> //object recognition
             <Fallback>
                 <FindObject   name="Not_Found"/> //spin to look for object and create map, send coordinate to trajectory
-                <LookAgain   name="Not_Found"/> //move to new unmapped location, spin to look for object and complete map, send coordinate
-                <LookAgain   name="Not_Found"/> //move to new unmapped location, spin to look for object and complete map, send coordinate
-                <SearchFailed   name="notify_ok"/> //notify that the search failed
+                <LookAgain1   name="Not_Found"/> //move to new unmapped location, spin to look for object and complete map, send coordinate
+                <LookAgain2   name="Not_Found"/> //move to new unmapped location, spin to look for object and complete map, send coordinate
+                <SearchFailed   name="notify_ok"/> //send coordinate of start location, notify that the search failed
             </Fallback>
             <ApproachObject    name="near_object"/> //follow trajectory
             <SendAlarm    name="alarm_ok"/> //send alarm
@@ -118,9 +118,13 @@ int main()
     BehaviorTreeFactory factory;
 
     // Register custom action nodes with the factory
-    factory.registerNodeType<FindBall>("FindBall");
-    factory.registerNodeType<PickBall>("PickBall");
-    factory.registerNodeType<PlaceBall>("PlaceBall");
+    factory.registerNodeType<LearnObject>("LearnObject");
+    factory.registerNodeType<FindObject>("FindObject");
+    factory.registerNodeType<LookAgain1>("LookAgain1");
+    factory.registerNodeType<LookAgain2>("LookAgain2");
+    factory.registerNodeType<SearchFailed>("SearchFailed");
+    factory.registerNodeType<ApproachObject>("ApproachObject");
+    factory.registerNodeType<SendAlarm>("SendAlarm");
 
     // Register custom condition nodes with the factory
     factory.registerSimpleCondition("BallClose", std::bind(BallClose));
