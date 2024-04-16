@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'tracking_node = tracking_control.Tracjectory_plan:main',
+            'Tracjectory_node = tracking_control.Tracjectory_plan:main',
             'joy_safety_ctrl = tracking_control.joy_safety_ctrl:main',
         ],
     },
