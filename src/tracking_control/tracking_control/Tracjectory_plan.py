@@ -70,11 +70,13 @@ class Nav2TrajectoryPlanner(Node):
         self.pub_control_cmd.publish(cmd_vel)
 
 def main(args=None):
+    print("Node started")
     rclpy.init(args=args)
     node = Nav2TrajectoryPlanner()
 
     # Wait for the map data to be received
     while node.map_data is None:
+        print("No map recived")
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
