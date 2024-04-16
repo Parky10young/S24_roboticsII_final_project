@@ -1,16 +1,27 @@
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Twist
 from nav2_msgs.action import NavigateToPose
+from nav_msgs.msg import OccupancyGrid
 from tf_transformations import quaternion_from_euler
 
 class Nav2TrajectoryPlanner(Node):
     def __init__(self):
         super().__init__('nav2_trajectory_planner')
         self.nav2_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        self.pub_control_cmd = self.create_publisher(Twist, '/track_cmd_vel', 10)
+        self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+        self.map_data = None
+
+    def map_callback(self, msg):
+        self.map_data = msg
 
     def send_goal(self, x, y, theta):
+        if self.map_data is None:
+            self.get_logger().error('Map data not received yet')
+            return
+
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose.header.frame_id = 'map'
         goal_msg.pose.header.stamp = self.get_clock().now().to_msg()
@@ -39,6 +50,7 @@ class Nav2TrajectoryPlanner(Node):
         result = future.result().result
         if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
             self.get_logger().info('Goal succeeded')
+            self.publish_control_command(0.0, 0.0)  # Stop the robot
         elif result.status == NavigateToPose.Result.STATUS_ABORTED:
             self.get_logger().error('Goal was aborted')
         elif result.status == NavigateToPose.Result.STATUS_CANCELED:
@@ -46,11 +58,21 @@ class Nav2TrajectoryPlanner(Node):
         else:
             self.get_logger().error('Unknown result status')
 
+    def publish_control_command(self, linear_velocity, angular_velocity):
+        cmd_vel = Twist()
+        cmd_vel.linear.x = linear_velocity
+        cmd_vel.angular.z = angular_velocity
+        self.pub_control_cmd.publish(cmd_vel)
+
 def main(args=None):
     rclpy.init(args=args)
     node = Nav2TrajectoryPlanner()
 
-    # Set the goal pose (x, y, theta)
+    # Wait for the map data to be received
+    while node.map_data is None:
+        rclpy.spin_once(node)
+
+    # Set the goal pose (x, y, theta) based on the map data
     goal_x = 1.0
     goal_y = 1.0
     goal_theta = 0.0
