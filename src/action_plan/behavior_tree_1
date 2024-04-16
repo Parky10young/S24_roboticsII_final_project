@@ -5,18 +5,18 @@
 
 using namespace BT;
 
-// Define FindBall action node
-class FindBall : public BT::SyncActionNode 
+// Define LearnFace action node
+class LearnFace : public BT::SyncActionNode 
 {
   public:
-    FindBall(const std::string& name) : BT::SyncActionNode(name, {})
+    LearnFace(const std::string& name) : BT::SyncActionNode(name, {})
     {
     }
 
-    // Define the tick() function for the FindBall node
+    // Define the tick() function for the LearnFace node
     NodeStatus tick() override
     {
-        std::cout << "[⚓ FindBall ] => \t" << this->name() << std::endl; 
+        std::cout << "[⚓ LearnFace ] => \t" << this->name() << std::endl; 
         return BT::NodeStatus::SUCCESS;
     }
 };
@@ -99,18 +99,15 @@ static const char* xml_text = R"(
 
      <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
-            <FindBall   name="found_ok"/>
-                <Sequence>
-                    <Fallback>
-                        <BallClose   name="no_ball"/>
-                        <PickBall    name="approach_ball"/>
-                    </Fallback>
-                    <Fallback>
-                        <BallGrasped   name="no_grasp"/>
-                        <GraspBall  name="grasp_ball"/>
-                    </Fallback>
-                </Sequence>
-            <PlaceBall   name="ball_placed"/>
+            <LearnObject   name="learn_ok"/> //object recognition
+            <Fallback>
+                <FindObject   name="Not_Found"/> //spin to look for object and create map, send coordinate to trajectory
+                <LookAgain1   name="Not_Found"/> //move to new unmapped location, spin to look for object and complete map, send coordinate
+                <LookAgain2   name="Not_Found"/> //move to new unmapped location, spin to look for object and complete map, send coordinate
+                <SearchFailed   name="notify_ok"/> //send coordinate of start location, notify that the search failed
+            </Fallback>
+            <ApproachObject    name="near_object"/> //follow trajectory
+            <SendAlarm    name="alarm_ok"/> //send alarm
         </Sequence>
      </BehaviorTree>
  </root>
@@ -121,9 +118,13 @@ int main()
     BehaviorTreeFactory factory;
 
     // Register custom action nodes with the factory
-    factory.registerNodeType<FindBall>("FindBall");
-    factory.registerNodeType<PickBall>("PickBall");
-    factory.registerNodeType<PlaceBall>("PlaceBall");
+    factory.registerNodeType<LearnObject>("LearnObject");
+    factory.registerNodeType<FindObject>("FindObject");
+    factory.registerNodeType<LookAgain1>("LookAgain1");
+    factory.registerNodeType<LookAgain2>("LookAgain2");
+    factory.registerNodeType<SearchFailed>("SearchFailed");
+    factory.registerNodeType<ApproachObject>("ApproachObject");
+    factory.registerNodeType<SendAlarm>("SendAlarm");
 
     // Register custom condition nodes with the factory
     factory.registerSimpleCondition("BallClose", std::bind(BallClose));
