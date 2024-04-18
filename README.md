@@ -1,16 +1,13 @@
 # S24_roboticsII_final_project
 Robotics II - Final Project
 
-
+'''
 Group 3 Members: 
 Christina Cavalluzzo, RIN 662005890
-
 Gabriela Crother-Collado, RIN 662021320
-
 Ziqiao Fang, RIN 661978765
-
 Yunyoung Park, RIN 662054365
-
+'''
 
 ### Launch the robot and camera
 **Docker**: Open another terminal and access docker (via VNC or SSH).
