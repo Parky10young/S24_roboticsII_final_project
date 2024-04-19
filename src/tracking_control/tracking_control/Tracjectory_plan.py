@@ -99,8 +99,8 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 0.0
-    goal_y = 0.0
+    goal_x = 1.0
+    goal_y = 2.0
     goal_theta = 0.0
     print("Map data recived")
 
