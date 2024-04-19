@@ -32,6 +32,7 @@ class Nav2TrajectoryPlanner(Node):
         goal_msg.pose.pose.position.y = y
         goal_msg.pose.pose.orientation = self.orientation_around_z_axis(theta)
 
+        print("waiting for server")
         self.nav2_client.wait_for_server()
         send_goal_future = self.nav2_client.send_goal_async(goal_msg)
         send_goal_future.add_done_callback(self.goal_response_callback)
@@ -69,6 +70,7 @@ class Nav2TrajectoryPlanner(Node):
         cmd_vel = Twist()
         cmd_vel.linear.x = linear_velocity
         cmd_vel.angular.z = angular_velocity
+        print("commanding robot to desired postion")
         self.pub_control_cmd.publish(cmd_vel)
 
 def main(args=None):
