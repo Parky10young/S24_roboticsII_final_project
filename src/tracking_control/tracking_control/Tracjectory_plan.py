@@ -56,12 +56,12 @@ class Nav2TrajectoryPlanner(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
-        if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
+        if result.result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
             self.get_logger().info('Goal succeeded')
             self.publish_control_command(0.0, 0.0)  # Stop the robot
-        elif result.status == NavigateToPose.Result.STATUS_ABORTED:
+        elif result.result.status == NavigateToPose.Result.STATUS_ABORTED:
             self.get_logger().error('Goal was aborted')
-        elif result.status == NavigateToPose.Result.STATUS_CANCELED:
+        elif result.result.status == NavigateToPose.Result.STATUS_CANCELED:
             self.get_logger().error('Goal was canceled')
         else:
             self.get_logger().error('Unknown result status')
