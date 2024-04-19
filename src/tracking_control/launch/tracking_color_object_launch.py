@@ -17,8 +17,8 @@ def generate_launch_description():
     
     obj_detection_node = Node(
         package=object_detection_pkg,
-        executable='color_obj_detection',
-        name='color_obj_detection_node',
+        executable='apriltag_detector',
+        name='apriltag_detector_node',
         output="screen"
     )
     tracking_control_node = Node(
