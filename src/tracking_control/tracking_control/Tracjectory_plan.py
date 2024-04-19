@@ -61,7 +61,7 @@ class Nav2TrajectoryPlanner(Node):
         print("waiting for server")
         self.nav2_client.wait_for_server()
         send_goal_future = self.nav2_client.send_goal_async(goal_msg)
-        print("navigation complete")
+        send_goal_future.add_done_callback(self.goal_response_callback)
 
     def quaternion_from_euler(self, roll, pitch, yaw):
         qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
@@ -84,7 +84,7 @@ class Nav2TrajectoryPlanner(Node):
 
         self.get_logger().info('Goal accepted by server, waiting for result')
         get_result_future = goal_handle.get_result_async()
-        get_result_future.add_done_callback(self.get_result_callback)
+        print("navigation complete")
 
     
 
