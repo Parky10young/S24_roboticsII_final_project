@@ -35,8 +35,8 @@ def generate_launch_description():
         ),
         Node(
             package='tracking_control',
-            executable='tracking_node',
-            name='tracking_node',
+            executable='Tracjectory_node',
+            name='Tracjectory_node',
             output='screen'
         )
     ])
