@@ -1,5 +1,3 @@
-import cv2
-import numpy as np
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
@@ -8,11 +6,10 @@ from sensor_msgs.msg import Image, PointCloud2
 from geometry_msgs.msg import PoseStamped
 from tf2_ros import TransformException, Buffer, TransformListener
 from cv_bridge import CvBridge
+import cv2
+import numpy as np
 import struct
 import sys
-from apriltag import apriltag
-
-
 
 ## Functions for quaternion and rotation matrix conversion
 ## The code is adapted from the general_robotics_toolbox package
@@ -55,68 +52,45 @@ def q2R(q):
     qhat = hat(q[1:4])
     qhat2 = qhat.dot(qhat)
     return I + 2*q[0]*qhat + 2*qhat2
-###################### 
-
+######################
 
 class ColorObjDetectionNode(Node):
     def __init__(self):
         super().__init__('color_obj_detection_node')
         self.get_logger().info('Color Object Detection Node Started')
-
-        # Initialize AprilTag detector with the appropriate tag family
-        self.april_detector = Detector(searchpath=apriltag._get_dll_path(),
-                                       families='tagStandard41h12',
-                                       nthreads=4,
-                                       quad_decimate=1.0,
-                                       quad_sigma=0.0,
-                                       refine_edges=True,
-                                       decode_sharpening=0.25,
-                                       debug=False)
         
         # Declare the parameters for the color detection
         self.declare_parameter('color_low', [110, 50, 150])
         self.declare_parameter('color_high', [130, 255, 255])
         self.declare_parameter('object_size_min', 1000)
-
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
-
+        
         # Create a transform listener
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-
-        # Create publishers for the detected objects
-        self.pub_detected_obj = self.create_publisher(Image, '/detected_color_object', 10)
+        
+        # Create publisher for the detected object and the bounding box
+        self.pub_detected_obj = self.create_publisher(Image, '/detected_color_object',10)
         self.pub_detected_obj_pose = self.create_publisher(PoseStamped, '/detected_color_object_pose', 10)
-
-        # Create subscribers to the RGB and Depth images
-        self.sub_rgb = self.create_subscription(Image, '/camera/color/image_raw', self.camera_callback, 10)
-        self.sub_depth = self.create_subscription(PointCloud2, '/camera/depth/points', self.camera_callback, 10)
-
-
-
-
-
-
+        # Create a subscriber to the RGB and Depth images
+        self.sub_rgb = Subscriber(self, Image, '/camera/color/image_raw')
+        self.sub_depth = Subscriber(self, PointCloud2, '/camera/depth/points')
+        # Create a time synchronizer
+        self.ts = ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth], 10, 0.1)
+        # Register the callback to the time synchronizer
+        self.ts.registerCallback(self.camera_callback)
 
     def camera_callback(self, rgb_msg, points_msg):
-         # Get color and object size parameters
-        param_color_low = self.get_parameter('color_low').get_parameter_value().integer_array_value
-        param_color_high = self.get_parameter('color_high').get_parameter_value().integer_array_value
-        param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
+        #self.get_logger().info('Received RGB and Depth Messages')
 
+        # get ROS parameters
+        param_color_low = np.array(self.get_parameter('color_low').value)
+        param_color_high = np.array(self.get_parameter('color_high').value)
+        param_object_size_min = self.get_parameter('object_size_min').value
+        
         # Convert the ROS image message to a numpy array
-        rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
-
-        # Convert to grayscale for AprilTag detection
-        gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
-
-        # Detect AprilTags in the grayscale image
-        tags = self.april_detector.detect(gray_image)
-        for tag in tags:
-            cv2.polylines(rgb_image, [np.array(tag.corners).astype(int)], isClosed=True, color=(0, 255, 0), thickness=2)
-            tag_center = np.array(tag.center).astype(int)
-            cv2.circle(rgb_image, tuple(tag_center), 5, (0, 255, 0), thickness=-1)
+        rgb_image = self.br.imgmsg_to_cv2(rgb_msg,"bgr8")
         # to hsv
         hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
         
@@ -124,21 +98,16 @@ class ColorObjDetectionNode(Node):
         color_mask = cv2.inRange(hsv_image, param_color_low, param_color_high)
         # find largest contour
         contours, _ = cv2.findContours(color_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # if len(contours) > 0:
-        #     largest_contour = max(contours, key=cv2.contourArea)
-        #     x, y, w, h = cv2.boundingRect(largest_contour)
-        #     # threshold by size
-        #     if w * h < param_object_size_min:
-        #         return
-        #     # draw rectangle
-        #     rgb_image=cv2.rectangle(rgb_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        #     center_x = int(x + w / 2)
-        #     center_y = int(y + h / 2)
         if len(contours) > 0:
             largest_contour = max(contours, key=cv2.contourArea)
             x, y, w, h = cv2.boundingRect(largest_contour)
+            # threshold by size
             if w * h < param_object_size_min:
-                return  # Object too small, ignore
+                return
+            # draw rectangle
+            rgb_image=cv2.rectangle(rgb_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            center_x = int(x + w / 2)
+            center_y = int(y + h / 2)
         else:
             return
         # get the location of the detected object using point cloud
@@ -171,11 +140,7 @@ class ColorObjDetectionNode(Node):
         detect_img_msg = self.br.cv2_to_imgmsg(rgb_image, encoding='bgr8')
         detect_img_msg.header = rgb_msg.header
         self.pub_detected_obj.publish(detect_img_msg)
-
-
-
-
-
+        
 def main(args=None):
     # Initialize the rclpy library
     rclpy.init(args=args)
