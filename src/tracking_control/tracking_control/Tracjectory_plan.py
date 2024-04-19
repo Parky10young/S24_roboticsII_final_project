@@ -4,6 +4,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, Twist, Quaternion
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid
+import numpy as np
 
 
 
@@ -12,8 +13,9 @@ class Nav2TrajectoryPlanner(Node):
         super().__init__('nav2_trajectory_planner')
         self.nav2_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.pub_control_cmd = self.create_publisher(Twist, '/track_cmd_vel', 10)
-        self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+        
         self.map_data = None
+        self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
 
     def map_callback(self, msg):
         self.map_data = msg
@@ -36,10 +38,10 @@ class Nav2TrajectoryPlanner(Node):
 
     def orientation_around_z_axis(self, theta):
         quaternion = Quaternion()
-        quaternion.w = cos(theta / 2.0)
+        quaternion.w = np.cos(theta / 2.0)
         quaternion.x = 0.0
         quaternion.y = 0.0
-        quaternion.z = sin(theta / 2.0)
+        quaternion.z = np.sin(theta / 2.0)
         return quaternion
     def goal_response_callback(self, future):
         goal_handle = future.result()
@@ -83,6 +85,7 @@ def main(args=None):
     goal_x = 1.0
     goal_y = 1.0
     goal_theta = 0.0
+    print("Map data recived")
 
     # Send the goal to Nav2
     node.send_goal(goal_x, goal_y, goal_theta)
