@@ -32,11 +32,5 @@ def generate_launch_description():
                 {'min_y_velocity_threshold': 0.5},
                 {'min_theta_velocity_threshold': 0.001}
             ]
-        ),
-        Node(
-            package='tracking_control',
-            executable='Tracjectory_node',
-            name='Tracjectory_node',
-            output='screen'
         )
     ])
