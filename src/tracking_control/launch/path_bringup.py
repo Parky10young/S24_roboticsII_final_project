@@ -1,7 +1,14 @@
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch import LaunchDescription
 from launch_ros.actions import Node
 
 def generate_launch_description():
+    map_arg = DeclareLaunchArgument(
+        'map',
+        default_value='/root/yahboomcar_ros2_ws/yahboomcar_ws/src/yahboomcar_nav/maps/yahboomcar1.yaml',
+        description='Full path to map yaml file to load'
+    )
     return LaunchDescription([
         Node(
             package='nav2_planner',
