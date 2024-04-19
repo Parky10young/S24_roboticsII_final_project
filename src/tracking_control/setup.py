@@ -25,6 +25,7 @@ setup(
         'console_scripts': [
             'Tracjectory_node = tracking_control.Tracjectory_plan:main',
             'joy_safety_ctrl = tracking_control.joy_safety_ctrl:main',
+            'visualization = tracking_control.visualize_path:main',
         ],
     },
 )
