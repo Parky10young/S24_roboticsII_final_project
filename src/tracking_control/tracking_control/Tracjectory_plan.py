@@ -61,7 +61,7 @@ class Nav2TrajectoryPlanner(Node):
         print("waiting for server")
         self.nav2_client.wait_for_server()
         send_goal_future = self.nav2_client.send_goal_async(goal_msg)
-        send_goal_future.add_done_callback(self.goal_response_callback)
+        print("navigation complete")
 
     def quaternion_from_euler(self, roll, pitch, yaw):
         qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
@@ -99,8 +99,8 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 1.0
-    goal_y = 1.0
+    goal_x = 0.0
+    goal_y = 0.0
     goal_theta = 0.0
     print("Map data recived")
 
