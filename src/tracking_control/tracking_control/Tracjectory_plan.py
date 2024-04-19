@@ -16,6 +16,15 @@ class Nav2TrajectoryPlanner(Node):
         
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+        self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
+        
+        # Set the initial pose of the robot
+        initial_pose = PoseStamped()
+        initial_pose.header.frame_id = 'map'
+        initial_pose.pose.position.x = 0.0  # Set the initial x position
+        initial_pose.pose.position.y = 0.0  # Set the initial y position
+        initial_pose.pose.orientation = self.quaternion_from_euler(0.0, 0.0, 0.0)  # Set the initial orientation (roll, pitch, yaw)
+        self.initial_pose_publisher.publish(initial_pose)
 
     def map_callback(self, msg):
         self.map_data = msg
@@ -37,6 +46,12 @@ class Nav2TrajectoryPlanner(Node):
         send_goal_future = self.nav2_client.send_goal_async(goal_msg)
         send_goal_future.add_done_callback(self.goal_response_callback)
 
+    def quaternion_from_euler(self, roll, pitch, yaw):
+        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        return Quaternion(x=qx, y=qy, z=qz, w=qw)
     def orientation_around_z_axis(self, theta):
         quaternion = Quaternion()
         quaternion.w = np.cos(theta / 2.0)
