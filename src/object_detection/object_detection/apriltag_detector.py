@@ -103,10 +103,11 @@ class ColorObjDetectionNode(Node):
 
         print(param_color_low, param_color_high)
 
-        
-           
+
+
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
-        if rgb_image is None or rgb_image.size == 0:
+        if rgb_image is None:
+        #if rgb_image is None or rgb_image.size == 0:
             self.get_logger().error('No image frame received')
             return
         # Now you can also print the shape to confirm it's the expected dimensions
