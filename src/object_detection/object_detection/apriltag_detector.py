@@ -82,6 +82,7 @@ class ColorObjDetectionNode(Node):
         self.sub_depth = self.create_subscription(PointCloud2, '/camera/depth/points', self.camera_callback, 10)
 
     def camera_callback(self, rgb_msg, points_msg):
+        self.get_logger().info('Received RGB and Depth Messages')
         param_color_low = self.get_parameter('color_low').get_parameter_value().integer_array_value
         param_color_high = self.get_parameter('color_high').get_parameter_value().integer_array_value
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
