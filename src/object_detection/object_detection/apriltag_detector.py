@@ -137,6 +137,8 @@ class ColorObjDetectionNode(Node):
             self.get_logger().error(f'Transform Error: {e}')
             return
 
+        # Publish the detected object
+        self.pub_detected_obj_pose.publish(detected_obj_pose)
         # Publish the detected object image
         detect_img_msg = self.br.cv2_to_imgmsg(rgb_image, encoding='bgr8')
         detect_img_msg.header = rgb_msg.header
