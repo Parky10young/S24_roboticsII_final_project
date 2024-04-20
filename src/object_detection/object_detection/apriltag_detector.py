@@ -104,15 +104,48 @@ class ColorObjDetectionNode(Node):
         color_mask = cv2.inRange(hsv_image, param_color_low, param_color_high)
         contours, _ = cv2.findContours(color_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
-        if contours:
-            largest_contour = max(contours, key=cv2.contourArea)
-            x, y, w, h = cv2.boundingRect(largest_contour)
-            if w * h < param_object_size_min:
-                return  # Object too small, ignore
-            center_x = int(x + w / 2)
-            center_y = int(y + h / 2)
-            self.get_logger().info(f"Object detected at ({center_x}, {center_y})")
-
+	if len(contours) > 0:
+	    largest_contour = max(contours, key=cv2.contourArea)
+	    x, y, w, h = cv2.boundingRect(largest_contour)
+	    # threshold by size
+	    if w * h < param_object_size_min:
+		return
+	    # draw rectangle
+	    rgb_image=cv2.rectangle(rgb_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+	    center_x = int(x + w / 2)
+	    center_y = int(y + h / 2)
+	else:
+	    return
+	# get the location of the detected object using point cloud
+	pointid = (center_y*points_msg.row_step) + (center_x*points_msg.point_step)
+	(X, Y, Z) = struct.unpack_from('fff', points_msg.data, offset=pointid)
+	center_points = np.array([X,Y,Z])
+	
+	if np.any(np.isnan(center_points)):
+	    return
+	
+	try:
+	    # Transform the center point from the camera frame to the world frame
+	    transform = self.tf_buffer.lookup_transform('base_footprint',rgb_msg.header.frame_id,rclpy.time.Time(),rclpy.duration.Duration(seconds=0.1))
+	    t_R = q2R(np.array([transform.transform.rotation.w,transform.transform.rotation.x,transform.transform.rotation.y,transform.transform.rotation.z]))
+	    cp_robot = t_R@center_points+np.array([transform.transform.translation.x,transform.transform.translation.y,transform.transform.translation.z])
+	    # Create a pose message for the detected object
+	    detected_obj_pose = PoseStamped()
+	    detected_obj_pose.header.frame_id = 'base_footprint'
+	    detected_obj_pose.header.stamp = rgb_msg.header.stamp
+	    detected_obj_pose.pose.position.x = cp_robot[0]
+	    detected_obj_pose.pose.position.y = cp_robot[1]
+	    detected_obj_pose.pose.position.z = cp_robot[2]
+	except TransformException as e:
+	    self.get_logger().error('Transform Error: {}'.format(e))
+	    return
+	
+	# Publish the detected object
+	self.pub_detected_obj_pose.publish(detected_obj_pose)
+	# publush the detected object image
+	detect_img_msg = self.br.cv2_to_imgmsg(rgb_image, encoding='bgr8')
+	detect_img_msg.header = rgb_msg.header
+	self.pub_detected_obj.publish(detect_img_msg)
 def main(args=None):
     rclpy.init(args=args)
     color_obj_detection_node = ColorObjDetectionNode()
