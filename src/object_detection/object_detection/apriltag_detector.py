@@ -94,6 +94,12 @@ class ColorObjDetectionNode(Node):
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
+        if rgb_image is None or rgb_image.size == 0:
+            self.get_logger().error('No image frame received')
+        return
+        # Now you can also print the shape to confirm it's the expected dimensions
+        print(f"Image shape: {rgb_image.shape}")
+
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
         tags = self.at_detector.detect(gray_image)
 
