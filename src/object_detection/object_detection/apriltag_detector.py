@@ -52,13 +52,14 @@ class ColorObjDetectionNode(Node):
 
         # Tag ID to name mapping
         self.tag_id_to_name = {
-            1: "Tag_One",
-            2: "Tag_Two",
-            3: "Tag_Three",
-            4: "Robbie",
-            5: "Tag_Five",
-            6: "Tag_Six",
-            7: "Tag_Seven"
+            0: "Robbie"
+            1: "Obstacle",
+            2: "Obstacle",
+            3: "Alice",
+            4: "Mallory",
+            5: "Bob",
+            6: "Yello Castle",
+            7: "Bucket"
         }
 
         # Declare parameters for color detection
