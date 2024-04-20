@@ -88,15 +88,17 @@ class ColorObjDetectionNode(Node):
         self.ts.registerCallback(self.camera_callback)
 
     def camera_callback(self, rgb_msg, points_msg):
-        self.get_logger().info('Received RGB and Depth Messages')
+        #self.get_logger().info('Received RGB and Depth Messages')
         param_color_low = self.get_parameter('color_low').get_parameter_value().integer_array_value
         param_color_high = self.get_parameter('color_high').get_parameter_value().integer_array_value
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
+        print(param_color_low)
+
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
         if rgb_image is None or rgb_image.size == 0:
             self.get_logger().error('No image frame received')
-        return
+            return
         # Now you can also print the shape to confirm it's the expected dimensions
         print(f"Image shape: {rgb_image.shape}")
 
