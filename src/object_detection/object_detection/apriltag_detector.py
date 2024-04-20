@@ -1,11 +1,21 @@
+import os
 import cv2
 import numpy as np
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+from message_filters import ApproximateTimeSynchronizer, Subscriber
 from cv_bridge import CvBridge
+from sensor_msgs.msg import Image, PointCloud2
+from geometry_msgs.msg import PoseStamped
 import struct
-import apriltag
-from apriltag import Detector
+import pupil_apriltags
+from pupil_apriltags import Detector
+from tf2_ros import TransformException, Buffer, TransformListener
+import sys
+
+
+
 
 # Functions for quaternion and rotation matrix conversion
 # Code adapted from: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
@@ -33,14 +43,14 @@ class ColorObjDetectionNode(Node):
         self.get_logger().info('Color Object Detection Node Started')
         
         # Initialize AprilTag detector
-        self.april_detector = Detector(searchpath='/usr/local/lib/python3.8/dist-packages/libapriltag.so',
-                                       families='tagStandard41h12',
-                                       nthreads=4,
-                                       quad_decimate=1.0,
-                                       quad_sigma=0.0,
-                                       refine_edges=True,
-                                       decode_sharpening=0.25,
-                                       debug=False)
+        self.at_detector = Detector(
+		families='tagStandard41h12',
+		nthreads=4,
+		quad_decimate=1.0,
+		quad_sigma=0.0,
+		refine_edges=True,
+		decode_sharpening=0.25,
+		debug=False)
 
         # Tag ID to name mapping
         self.tag_id_to_name = {
