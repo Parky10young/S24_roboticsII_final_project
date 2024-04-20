@@ -23,8 +23,8 @@ class WaypointPublisher(Node):
         ""
         msg.data = 'Hello World: %d' % self.i
         ""
-        self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.publisher_.publish(waypoint)
+        self.get_logger().info('Publishing: "%s"' % waypoint.data)
         self.i += 1
 
 
