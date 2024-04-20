@@ -33,7 +33,7 @@ class ColorObjDetectionNode(Node):
         self.get_logger().info('Color Object Detection Node Started')
         
         # Initialize AprilTag detector
-        self.april_detector = Detector(searchpath='/usr/local/lib/python3.8/dist-packages/libapriltag.so,
+        self.april_detector = Detector(searchpath='/usr/local/lib/python3.8/dist-packages/libapriltag.so',
                                        families='tagStandard41h12',
                                        nthreads=4,
                                        quad_decimate=1.0,
