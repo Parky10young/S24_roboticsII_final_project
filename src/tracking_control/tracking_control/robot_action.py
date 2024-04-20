@@ -3,7 +3,7 @@ from rclpy.action import ActionClient
 from rclpy.node import Node
 import numpy as np
 
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import String, Float32MultiArray
 
 
 class WaypointPublisher(Node):
@@ -15,12 +15,22 @@ class WaypointPublisher(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
+        """self.current_pos_subscriber = self.create_subscription(String, '/map', self.map_callback, 10)"""
+
     def timer_callback(self):
         waypoint = Float32MultiArray()
         waypoint.data = [3.0,3.0,np.pi/2]
         self.publisher_.publish(waypoint)
         self.get_logger().info('Publishing: "%s"' % waypoint.data)
         self.i += 1
+
+        """
+        if self.current_pos_subscriber == "Yes
+        
+        """"
+
+
+
         """
         msg = String()
         msg.data = 'Hello World: %d' % self.i
