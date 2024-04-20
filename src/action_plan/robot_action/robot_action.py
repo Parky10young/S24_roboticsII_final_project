@@ -20,12 +20,16 @@ class WaypointPublisher(Node):
 
     def timer_callback(self):
         waypoint.data = [3.0,3.0,np.pi/2]
-        ""
-        msg.data = 'Hello World: %d' % self.i
-        ""
         self.publisher_.publish(waypoint)
         self.get_logger().info('Publishing: "%s"' % waypoint.data)
         self.i += 1
+        """
+        msg = String()
+        msg.data = 'Hello World: %d' % self.i
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.i += 1
+        """
 
 
 def main(args=None):
