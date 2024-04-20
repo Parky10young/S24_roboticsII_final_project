@@ -4,6 +4,8 @@ from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, Twist, Quaternion
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid
+from std_msgs.msg import String
+from std_msgs.msg import Float32MultiArray
 import numpy as np
 
 
@@ -13,9 +15,12 @@ class Nav2TrajectoryPlanner(Node):
         super().__init__('nav2_trajectory_planner')
         self.nav2_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.pub_control_cmd = self.create_publisher(Twist, '/track_cmd_vel', 10)
-        
+        self.status_publisher = self.create_publisher(String, '/nav2_status', 10)
+
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+        self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
+
         #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
         self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
         
@@ -30,21 +35,23 @@ class Nav2TrajectoryPlanner(Node):
     def map_callback(self, msg):
         self.map_data = msg
 
+
+    def publish_status(self, status):
+        msg = String()
+        msg.data = status
+        self.status_publisher.publish(msg)
+
     def goal_pose_callback(self,msg):
     # Extract position
-        x = msg.pose.position.x
-        y = msg.pose.position.y
+        
+        
+        x = msg.data[0]
+        y = msg.data[1]
+        print("target position")
+        print("X:",x,"y:",y)
 
-        # Extract orientation
-        quaternion = (
-            msg.pose.orientation.x,
-            msg.pose.orientation.y,
-            msg.pose.orientation.z,
-            msg.pose.orientation.w
-        )
-        _, _, yaw = euler_from_quaternion(quaternion)
 
-        self.send_goal(x,y,yaw)
+        #self.send_goal(x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
@@ -80,11 +87,24 @@ class Nav2TrajectoryPlanner(Node):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().error('Goal rejected by server')
+            self.publish_status('Goal rejected')
             return
 
         self.get_logger().info('Goal accepted by server, waiting for result')
+        self.publish_status('Goal accepted, planning path')
+
         get_result_future = goal_handle.get_result_async()
+        get_result_future.add_done_callback(self.get_result_callback)
         print("navigation complete")
+
+    def get_result_callback(self, future):
+        result = future.result().result
+        # if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
+        #     self.get_logger().info('Navigation succeeded')
+        #     self.publish_status('Navigation succeeded')
+        # else:
+        #     self.get_logger().error('Navigation failed')
+        #     self.publish_status('Navigation failed')
 
     
 
@@ -99,13 +119,13 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 1.0
-    goal_y = 2.0
-    goal_theta = 0.0
+    # goal_x = 1.0
+    # goal_y = 2.0
+    # goal_theta = 0.0
     print("Map data recived")
 
     # Send the goal to Nav2
-    node.send_goal(goal_x, goal_y, goal_theta)
+    #node.send_goal(goal_x, goal_y, goal_theta)
 
     rclpy.spin(node)
     node.destroy_node()

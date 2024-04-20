@@ -78,9 +78,9 @@ class ColorObjDetectionNode(Node):
         self.pub_detected_obj_pose = self.create_publisher(PoseStamped, '/detected_color_object_pose', 10)
 
         # Subscribers
-        self.sub_rgb = self.create_subscription(Image, '/camera/color/image_raw', self.camera_callback, 10)
+        self.sub_rgb = Subscriber(self, Image, '/camera/color/image_raw')
         print("rgb passed")
-        self.sub_depth = self.create_subscription(PointCloud2, '/camera/depth/points', self.camera_callback, 10)
+        self.sub_depth = Subscriber(self, PointCloud2, '/camera/depth/points')
         print("Point passed")
         
         self.ts = ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth], 10, 0.1)
@@ -88,14 +88,26 @@ class ColorObjDetectionNode(Node):
         self.ts.registerCallback(self.camera_callback)
 
     def camera_callback(self, rgb_msg, points_msg):
-        self.get_logger().info('Received RGB and Depth Messages')
+        #self.get_logger().info('Received RGB and Depth Messages')
         param_color_low = self.get_parameter('color_low').get_parameter_value().integer_array_value
         param_color_high = self.get_parameter('color_high').get_parameter_value().integer_array_value
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
+        print(param_color_low, param_color_high)
+
+
+
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
+        
+        if rgb_image is None or rgb_image.size == 0:
+            self.get_logger().error('No image frame received')
+            return
+        # Now you can also print the shape to confirm it's the expected dimensions
+        print(f"Image shape: {rgb_image.shape}")
+
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
         tags = self.at_detector.detect(gray_image)
+        print("tags")
 
         for tag in tags:
             tag_name = self.tag_id_to_name.get(tag.tag_id, "Unknown Tag")
