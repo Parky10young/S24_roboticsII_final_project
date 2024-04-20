@@ -122,3 +122,87 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+############ testing apriltag detection ##################
+"""
+import os
+import cv2
+import numpy as np
+import rclpy
+from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+from message_filters import ApproximateTimeSynchronizer, Subscriber
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image, PointCloud2
+from geometry_msgs.msg import PoseStamped
+import struct
+import pupil_apriltags
+from pupil_apriltags import Detector
+from tf2_ros import TransformException, Buffer, TransformListener
+import sys
+
+## Functions for quaternion and rotation matrix conversion
+## The code is adapted from the general_robotics_toolbox package
+## Code reference: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
+
+class ColorObjDetectionNode(Node):
+    def __init__(self):
+        super().__init__('color_obj_detection_node')
+        self.get_logger().info('Color Object Detection Node Started')
+        
+        # Initialize AprilTag detector
+        self.at_detector = Detector(
+            families='tagStandard41h12',
+            nthreads=4,
+            quad_decimate=1.0,
+            quad_sigma=0.0,
+            refine_edges=True,
+            decode_sharpening=0.25,
+            debug=False
+        )
+        
+        # Conversion between ROS and OpenCV images
+        self.br = CvBridge()
+        
+        # Subscriber
+        self.sub_rgb = self.create_subscription(
+            Image,
+            '/camera/color/image_raw',
+            self.camera_callback,
+            10
+        )
+
+    def camera_callback(self, msg):
+        # Convert ROS Image message to OpenCV image
+        try:
+            cv_image = self.br.imgmsg_to_cv2(msg, "bgr8")
+        except CvBridgeError as e:
+            self.get_logger().error(f"Could not convert image: {e}")
+            return
+
+        # Convert the image to grayscale
+        gray_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+        
+        # Perform AprilTag detection
+        tags = self.at_detector.detect(gray_image)
+        
+        # Process the tags as needed (e.g., draw bounding boxes, calculate pose)
+        for tag in tags:
+            self.get_logger().info(f"Detected AprilTag with ID: {tag.tag_id}")
+            # Add visualization or further processing here
+            # ...
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ColorObjDetectionNode()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+"""
