@@ -18,6 +18,7 @@
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>nav2_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>visualization_msgs.msg</exec_depend>
   <exec_depend>python-transforms3d-pip</exec_depend>
 
 

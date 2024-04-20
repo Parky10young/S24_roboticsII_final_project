@@ -16,9 +16,35 @@ class Nav2TrajectoryPlanner(Node):
         
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+        #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
+        self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
+        
+        # Set the initial pose of the robot
+        initial_pose = PoseStamped()
+        initial_pose.header.frame_id = 'map'
+        initial_pose.pose.position.x = 0.0  # Set the initial x position
+        initial_pose.pose.position.y = 0.0  # Set the initial y position
+        initial_pose.pose.orientation = self.quaternion_from_euler(0.0, 0.0, 0.0)  # Set the initial orientation (roll, pitch, yaw)
+        self.initial_pose_publisher.publish(initial_pose)
 
     def map_callback(self, msg):
         self.map_data = msg
+
+    def goal_pose_callback(self,msg):
+    # Extract position
+        x = msg.pose.position.x
+        y = msg.pose.position.y
+
+        # Extract orientation
+        quaternion = (
+            msg.pose.orientation.x,
+            msg.pose.orientation.y,
+            msg.pose.orientation.z,
+            msg.pose.orientation.w
+        )
+        _, _, yaw = euler_from_quaternion(quaternion)
+
+        self.send_goal(x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
@@ -37,6 +63,12 @@ class Nav2TrajectoryPlanner(Node):
         send_goal_future = self.nav2_client.send_goal_async(goal_msg)
         send_goal_future.add_done_callback(self.goal_response_callback)
 
+    def quaternion_from_euler(self, roll, pitch, yaw):
+        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        return Quaternion(x=qx, y=qy, z=qz, w=qw)
     def orientation_around_z_axis(self, theta):
         quaternion = Quaternion()
         quaternion.w = np.cos(theta / 2.0)
@@ -52,26 +84,9 @@ class Nav2TrajectoryPlanner(Node):
 
         self.get_logger().info('Goal accepted by server, waiting for result')
         get_result_future = goal_handle.get_result_async()
-        get_result_future.add_done_callback(self.get_result_callback)
+        print("navigation complete")
 
-    def get_result_callback(self, future):
-        result = future.result().result
-        if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
-            self.get_logger().info('Goal succeeded')
-            self.publish_control_command(0.0, 0.0)  # Stop the robot
-        elif result.status == NavigateToPose.Result.STATUS_ABORTED:
-            self.get_logger().error('Goal was aborted')
-        elif result.status == NavigateToPose.Result.STATUS_CANCELED:
-            self.get_logger().error('Goal was canceled')
-        else:
-            self.get_logger().error('Unknown result status')
-
-    def publish_control_command(self, linear_velocity, angular_velocity):
-        cmd_vel = Twist()
-        cmd_vel.linear.x = linear_velocity
-        cmd_vel.angular.z = angular_velocity
-        print("commanding robot to desired postion")
-        self.pub_control_cmd.publish(cmd_vel)
+    
 
 def main(args=None):
     print("Node started")
@@ -85,7 +100,7 @@ def main(args=None):
 
     # Set the goal pose (x, y, theta) based on the map data
     goal_x = 1.0
-    goal_y = 1.0
+    goal_y = 2.0
     goal_theta = 0.0
     print("Map data recived")
 
