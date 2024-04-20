@@ -43,10 +43,11 @@ class Nav2TrajectoryPlanner(Node):
 
     def goal_pose_callback(self,msg):
     # Extract position
-        x = msg[0]
-        y = msg[1]
+        
         print("target position")
         print(msg)
+        x = msg.data(0)
+        y = msg.data(1)
 
 
         #self.send_goal(x,y,yaw)
