@@ -79,7 +79,9 @@ class ColorObjDetectionNode(Node):
 
         # Subscribers
         self.sub_rgb = self.create_subscription(Image, '/camera/color/image_raw', self.camera_callback, 10)
+        print("rgb passed")
         self.sub_depth = self.create_subscription(PointCloud2, '/camera/depth/points', self.camera_callback, 10)
+        print("Point passed")
 
     def camera_callback(self, rgb_msg, points_msg):
         self.get_logger().info('Received RGB and Depth Messages')
