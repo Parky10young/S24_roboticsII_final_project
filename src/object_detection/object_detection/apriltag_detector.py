@@ -78,9 +78,9 @@ class ColorObjDetectionNode(Node):
         self.pub_detected_obj_pose = self.create_publisher(PoseStamped, '/detected_color_object_pose', 10)
 
         # Subscribers
-        self.sub_rgb = self.create_subscription(Image, '/camera/color/image_raw', self.camera_callback, 10)
+        self.sub_rgb = Subscriber(self, Image, '/camera/color/image_raw')
         print("rgb passed")
-        self.sub_depth = self.create_subscription(PointCloud2, '/camera/depth/points', self.camera_callback, 10)
+        self.sub_depth = Subscriber(self, PointCloud2, '/camera/depth/points')
         print("Point passed")
         
         self.ts = ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth], 10, 0.1)
