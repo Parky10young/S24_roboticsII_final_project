@@ -79,9 +79,16 @@ class ColorObjDetectionNode(Node):
 
         # Subscribers
         self.sub_rgb = self.create_subscription(Image, '/camera/color/image_raw', self.camera_callback, 10)
+        print("rgb passed")
         self.sub_depth = self.create_subscription(PointCloud2, '/camera/depth/points', self.camera_callback, 10)
+        print("Point passed")
+        
+        self.ts = ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth], 10, 0.1)
+        # Register the callback to the time synchronizer
+        self.ts.registerCallback(self.camera_callback)
 
     def camera_callback(self, rgb_msg, points_msg):
+        self.get_logger().info('Received RGB and Depth Messages')
         param_color_low = self.get_parameter('color_low').get_parameter_value().integer_array_value
         param_color_high = self.get_parameter('color_high').get_parameter_value().integer_array_value
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
@@ -137,6 +144,8 @@ class ColorObjDetectionNode(Node):
             self.get_logger().error(f'Transform Error: {e}')
             return
 
+        # Publish the detected object
+        self.pub_detected_obj_pose.publish(detected_obj_pose)
         # Publish the detected object image
         detect_img_msg = self.br.cv2_to_imgmsg(rgb_image, encoding='bgr8')
         detect_img_msg.header = rgb_msg.header
