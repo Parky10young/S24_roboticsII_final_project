@@ -46,8 +46,8 @@ class Nav2TrajectoryPlanner(Node):
         
         print("target position")
         print(msg)
-        x = msg.data(0)
-        y = msg.data(1)
+        x = msg.data[0]
+        y = msg.data[1]
 
 
         #self.send_goal(x,y,yaw)
