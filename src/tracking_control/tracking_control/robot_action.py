@@ -3,20 +3,20 @@ from rclpy.action import ActionClient
 from rclpy.node import Node
 import numpy as np
 
-from std_msgs.msg import Int32MultiArray
+from std_msgs.msg import Float32MultiArray
 
 
 class WaypointPublisher(Node):
 
     def __init__(self):
         super().__init__('waypoint_publisher')
-        self.publisher_ = self.create_publisher(Int32MultiArray, 'topic', 10)
+        self.publisher_ = self.create_publisher(Float32MultiArray, 'topic', 10)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
-        waypoint = Int32MultiArray()
+        waypoint = Float32MultiArray()
         waypoint.data = [3.0,3.0,np.pi/2]
         self.publisher_.publish(waypoint)
         pub.publish(waypoint)
