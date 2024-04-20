@@ -93,8 +93,18 @@ class ColorObjDetectionNode(Node):
         param_color_high = self.get_parameter('color_high').get_parameter_value().integer_array_value
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
-        print(param_color_low)
+        print(param_color_low, param_color_high)
 
+        # Reshape the parameters if necessary
+        if param_color_low.shape != (1, 3):
+            param_color_low = param_color_low.reshape(1, 3)
+        if param_color_high.shape != (1, 3):
+            param_color_high = param_color_high.reshape(1, 3)
+
+        print(param_color_low, param_color_high)
+
+        
+           
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
         if rgb_image is None or rgb_image.size == 0:
             self.get_logger().error('No image frame received')
