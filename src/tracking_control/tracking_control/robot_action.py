@@ -10,7 +10,7 @@ class WaypointPublisher(Node):
 
     def __init__(self):
         super().__init__('waypoint_publisher')
-        self.publisher_ = self.create_publisher(Float32MultiArray, 'topic', 10)
+        self.publisher_ = self.create_publisher(Float32MultiArray, 'waypoint_topic', 10)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
