@@ -4,7 +4,8 @@ import rclpy
 from rclpy.node import Node
 from cv_bridge import CvBridge
 import struct
-from apriltag import apriltag, Detector
+import apriltag
+from apriltag import Detector
 
 # Functions for quaternion and rotation matrix conversion
 # Code adapted from: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
