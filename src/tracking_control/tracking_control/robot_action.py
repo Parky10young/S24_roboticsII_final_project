@@ -19,7 +19,7 @@ class WaypointPublisher(Node):
         waypoint = Float32MultiArray()
         waypoint.data = [3.0,3.0,np.pi/2]
         self.publisher_.publish(waypoint)
-        pub.publish(waypoint)
+        self.get_logger().info('Publishing: "%s"' % waypoint.data)
         self.i += 1
         """
         msg = String()
