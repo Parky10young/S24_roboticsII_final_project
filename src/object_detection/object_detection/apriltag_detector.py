@@ -104,6 +104,7 @@ class ColorObjDetectionNode(Node):
 
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
         tags = self.at_detector.detect(gray_image)
+        print("tags")
 
         for tag in tags:
             tag_name = self.tag_id_to_name.get(tag.tag_id, "Unknown Tag")
