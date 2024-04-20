@@ -95,14 +95,6 @@ class ColorObjDetectionNode(Node):
         
         print(param_color_low, param_color_high)
 
-        # Reshape the parameters if necessary
-        if param_color_low.shape != (1, 3):
-            param_color_low = param_color_low.reshape(1, 3)
-        if param_color_high.shape != (1, 3):
-            param_color_high = param_color_high.reshape(1, 3)
-
-        print(param_color_low, param_color_high)
-
 
 
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
