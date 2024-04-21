@@ -28,47 +28,24 @@ source install/setup.bash
 ## Launch tracking nodes!
 
 ### Color Detection and Tracking Node
-**Docker**: Open a terminal and access docker (via VNC or SSH). Remeber to **Activate ROS2 environment**.
 ```
 ros2 launch tracking_control tracking_color_object_launch.py
 ```
 
 ### Teleoperation node
-**Docker**: Open another terminal and access docker (via VNC or SSH). Remeber to **Activate ROS2 environment**. In this node, you can control the robot and activate/deactive tracking.
 ```
 ros2 run tracking_control joy_safety_ctrl
 ```
 ### Launch the robot and camera
-**Docker**: Open another terminal and access docker (via VNC or SSH).
 For the old camera model (astra pro, Robot 1~6)
 ```
 ros2 launch tracking_control car_camera_pro_bringup_launch.py
 ```
-For the new camera model (astra pro plus, Robot 7~). **Unplug and plug** the camera cable if you haven't do so after booting up the robot. The image of the camera cable location is in mini project 2 description.
 ```
 ros2 launch tracking_control car_camera_proplus_bringup_launch.py
 ```
 
 ## Robot Teleoeration
-At the terminal that run the teleoperation node, the terminal should show this.
-```
-Control Your Robot!
-Press and hold the keys to move around.
-Press space key to turn on/off tracking.
----------------------------
-Moving around:
-   u    i    o
-   j    k    l
-   m    ,    .
-
-t/y : turn counterclockwise/clockwise
-k : force stop
-space key : turn on/off tracking
-anything else : stop smoothly
-
-CTRL-C to quit
-```
-
 As the hint suggested, the following function can be done by press and/or hold the key.
 
 - Activate/Deactivate autonomous tracking: press space key
