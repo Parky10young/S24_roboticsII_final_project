@@ -28,12 +28,12 @@ class WaypointPublisher(Node):
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
             self.i == 1
-            """
+            
             if  curr_pos== "Arrived":
                 self.i = 0
                 return
             return
-            """
+            
         #go to start
         elif self.i==0:
             waypoint = Float32MultiArray()
@@ -52,6 +52,7 @@ class WaypointPublisher(Node):
     def current_position_callback(self, msg):
         #check if robot has arrived to waypoint
         curr_pos = msg.data
+        return curr_pos
 
     def object_pose_callback(self, detected_obj_pose):
         print("coordinate recieved")
