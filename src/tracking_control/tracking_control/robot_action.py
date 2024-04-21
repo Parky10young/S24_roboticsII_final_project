@@ -2,6 +2,7 @@ import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
 import numpy as np
+import time
 
 from std_msgs.msg import String, Float32MultiArray
 from geometry_msgs.msg import PoseStamped
@@ -12,7 +13,7 @@ class WaypointPublisher(Node):
     def __init__(self):
         super().__init__('waypoint_publisher')
         self.publisher_ = self.create_publisher(Float32MultiArray, 'waypoint_topic', 10)
-        timer_period = 0.5  # seconds
+        timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 1
         self.curr_pose = None
@@ -39,6 +40,8 @@ class WaypointPublisher(Node):
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
             self.i = 3
+            time.sleep(1)
+
             return
         '''
         #change waypoint
