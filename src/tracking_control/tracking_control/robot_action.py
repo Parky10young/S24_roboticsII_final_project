@@ -16,6 +16,7 @@ class WaypointPublisher(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 1
         self.curr_pose = None
+        self.akg = None
         self.current_pos_subscriber = self.create_subscription(String, '/nav2_status', self.current_position_callback, 10)
         self.current_pos_subscriber = self.create_subscription(String, '/akg', self.acknowledgement_callback, 10)
         self.object_pose_subscriber = self.create_subscription(PoseStamped, '/detected_color_object_pose', self.object_pose_callback, 10)
