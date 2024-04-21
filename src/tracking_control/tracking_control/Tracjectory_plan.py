@@ -49,6 +49,12 @@ class Nav2TrajectoryPlanner(Node):
         msg.data = status
         self.status_publisher.publish(msg)
 
+
+    def publish_akg(self, status):
+        msg = String()
+        msg.data = status
+        self.akg_publisher.publish(msg)
+
     def goal_pose_callback(self,msg):
     # Extract position
         
@@ -57,7 +63,7 @@ class Nav2TrajectoryPlanner(Node):
         y = msg.data[1]
         yaw = msg.data[2]
         print("X:",x,"y",y)
-        self.akg_publisher("ok")
+        self.publish_akg("ok")
         
 
 
