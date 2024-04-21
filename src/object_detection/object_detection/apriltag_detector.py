@@ -136,7 +136,7 @@ class ColorObjDetectionNode(Node):
                     cv2.waitKey(0)
             
                 else:
-                        print('Failed to save image')
+                    print('Failed to save image')
             else:
                 print('Failed to load the image')
 
