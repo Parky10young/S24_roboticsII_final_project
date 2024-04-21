@@ -106,9 +106,9 @@ class Nav2TrajectoryPlanner(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
-        print(result.status)
+        print(result.result)
         print("navigation complete")
-        if result.status == NavigateToPose.Result.SUCCEEDED:
+        if result.result == NavigateToPose.Result.SUCCEEDED:
             self.get_logger().info('Navigation succeeded')
             self.publish_status('Navigation succeeded')
         else:
