@@ -28,32 +28,43 @@ class WaypointPublisher(Node):
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
             self.i == 1
+            """
             if  curr_pos== "Arrived":
                 self.i = 0
                 return
             return
+            """
         #go to start
-        else if self.i==0:
+        elif self.i==0:
             waypoint = Float32MultiArray()
             waypoint.data = [0.0,0.0,0.0]
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
             self.i = 0
+            """
             if  curr_pos== "Arrived":
                 self.i = 1
                 return
             return
+            """
 
         
     def current_position_callback(self, msg):
         #check if robot has arrived to waypoint
         curr_pos = msg.data
 
-    def object_pose_callback(self, pose):
+    def object_pose_callback(self, detected_obj_pose):
         #print object coordinates 
-        """add something here to get x,y,theta from pose data"""
+        '''
+         detected_obj_pose.pose.position.x = cp_robot[0]
+            detected_obj_pose.pose.position.y = cp_robot[1]
+            detected_obj_pose.pose.position.z = cp_robot[2]
+            '''
+        x = detected_obj_pose.pose.position.x
+        y = detected_obj_pose.pose.position.y
+        z = detected_obj_pose.pose.position.z
         print("Object Position")
-        print("X:",x,"y:",y,"yaw:",yaw)
+        print("X:",x,"y:",y,"z:",z)
 
 def main(args=None):
     rclpy.init(args=args)
