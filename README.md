@@ -16,24 +16,8 @@ Install pupil_apriltags inside the docker for Detector
 pip3 install pupil-apriltags
 '''
 
-Then run this command to build your work space.
-```
-cd ~/codes/[team_name]_ws
-colcon build
-```
-
-**Important**: You have to compile the package **EVERYTIME** you modify the code, even the code is written in **PYTHON**. You can simply build one specific package using the following command. (So you don't have to compile ALL packages.)
-```
-colcon build --packages-select [package_name]
-```
-The [package_name] are for example, `object_detection`, `tracking_control`.
-
 ## Activate ROS2 environment
 Activate ROS2 environment to run ROS software
-
-**Important**: You have to activate ROS2 environment **EVERYTIME** you open a new terminal and run/access the docker container.
-
-The reason you don't need to do this while doing previous mini project is that there's an ROS activation command in `/root/.bashrc` in the docker container. Whenever a terminal is launched, it will exected this bash script once.
 
 **Docker**: Open/access a docker container via a terminal (VNC or SSH)
 ```
