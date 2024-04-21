@@ -33,7 +33,9 @@ class Nav2TrajectoryPlanner(Node):
         initial_pose.pose.orientation = self.quaternion_from_euler(0.0, 0.0, 0.0)  # Set the initial orientation (roll, pitch, yaw)
         self.initial_pose_publisher.publish(initial_pose)
 
-        if self.goal != None:
+
+        
+        if self.goal != None and :
             self.send_goal(self.goal[0],self.goal[1],self.goal[2])
 
     def map_callback(self, msg):
@@ -100,11 +102,12 @@ class Nav2TrajectoryPlanner(Node):
 
         get_result_future = goal_handle.get_result_async()
         get_result_future.add_done_callback(self.get_result_callback)
-        print("navigation complete")
+        
 
     def get_result_callback(self, future):
         result = future.result().result
-        print(NavigateToPose.Result)
+        print(NavigateToPose.Result.STATUS)
+        print("navigation complete")
         # if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
         #     self.get_logger().info('Navigation succeeded')
         #     self.publish_status('Navigation succeeded')
@@ -125,8 +128,8 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 1.0
-    goal_y = 2.0
+    goal_x = 0.0
+    goal_y = 0.0
     goal_theta = 0.0
     print("Map data recived")
 
