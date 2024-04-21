@@ -41,6 +41,8 @@ class ColorObjDetectionNode(Node):
         super().__init__('color_obj_detection_node')
         self.get_logger().info('\r\nColor Object Detection Node Started')
         
+
+        ################# april#####################################
         # Initialize AprilTag detector
         self.at_detector = Detector(
             families='tagStandard41h12',
@@ -63,6 +65,9 @@ class ColorObjDetectionNode(Node):
             6: "Yello Castle",
             7: "Bucket"
         }
+        ##############################################################
+
+
 
         # Declare parameters for color detection
         self.declare_parameter('color_low', [110, 50, 150])
@@ -121,8 +126,13 @@ class ColorObjDetectionNode(Node):
             cv2.circle(rgb_image, tuple(tag_center), 5, (0, 255, 0), thickness=-1)
             if tag.tag_id == 0:
                 print("We found Robbie!")
-                cv2.imshow('Image Window', image)
-                cv2.waitKey(0)
+                if image is not None and image.size > 0:
+                    cv2.imshow('Image Window', image)
+                    cv2.waitKey(0)
+                else:
+                    print("Image is empty or not loaded.")
+                
+
                 
 
         hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
