@@ -17,6 +17,7 @@ class Nav2TrajectoryPlanner(Node):
         self.nav2_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.pub_control_cmd = self.create_publisher(Twist, '/track_cmd_vel', 10)
         self.status_publisher = self.create_publisher(String, '/nav2_status', 10)
+        self.akg_publisher = self.create_publisher(String, '/akg', 10)
 
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
@@ -56,6 +57,7 @@ class Nav2TrajectoryPlanner(Node):
         y = msg.data[1]
         yaw = msg.data[2]
         print("X:",x,"y",y)
+        self.akg_publisher("ok")
         
 
 
