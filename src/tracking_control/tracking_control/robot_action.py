@@ -15,14 +15,15 @@ class WaypointPublisher(Node):
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 1
-
+        self.curr_pose = None
         self.current_pos_subscriber = self.create_subscription(String, '/nav2_status', self.current_position_callback, 10)
+        self.current_pos_subscriber = self.create_subscription(String, '/akg', self.acknowledgement_callback, 10)
         self.object_pose_subscriber = self.create_subscription(PoseStamped, '/detected_color_object_pose', self.object_pose_callback, 10)
 
     def timer_callback(self):
         #loop between waypoint 1 and start position
         #go to waypoint 1
-        if self.i==1:
+        if self.akg!="ok":
             waypoint = Float32MultiArray()
             waypoint.data = [3.0,3.0,np.pi/2]
             self.publisher_.publish(waypoint)
@@ -40,18 +41,21 @@ class WaypointPublisher(Node):
             return
         #change waypoint
         else:
-            if  self.i == 2 and current_position_callback(self, msg)== "Arrived":
+            if  self.i == 2 and self.curr_pose== "Arrived":
                 self.i = 0
                 return
-            elif self.i == 3 and current_position_callback(self, msg)== "Arrived":
+            elif self.i == 3 and self.curr_pose== "Arrived":
                 self.i = 1
                 return
             return
         
     def current_position_callback(self, msg):
         #check if robot has arrived to waypoint
-        curr_pos = msg.data
-        return curr_pos
+        self.curr_pose = msg.data
+
+    def acknowledgement_callback(self, msg):
+        #check if robot has recieved waypoint
+        self.akg = msg.data
 
     def object_pose_callback(self, detected_obj_pose):
         print("coordinate recieved")
