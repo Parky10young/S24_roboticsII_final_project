@@ -14,7 +14,7 @@ from pupil_apriltags import Detector
 from tf2_ros import TransformException, Buffer, TransformListener
 import sys
 
-image = cv2.imread('/root/home/codes/gr3/src/object_detection/test.jpg')
+image = cv2.imread('test.jpg')
 
 # Functions for quaternion and rotation matrix conversion
 # Code adapted from: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
@@ -95,6 +95,8 @@ class ColorObjDetectionNode(Node):
         # Register the callback to the time synchronizer
         self.ts.registerCallback(self.camera_callback)
 
+
+
     def camera_callback(self, rgb_msg, points_msg):
         self.get_logger().info('Received RGB and Depth Messages')
         param_color_low = np.array(self.get_parameter('color_low').get_parameter_value().integer_array_value, dtype=np.uint8)
@@ -102,9 +104,6 @@ class ColorObjDetectionNode(Node):
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
         #print(param_color_low, param_color_high)
-
-
-
         rgb_image = self.br.imgmsg_to_cv2(rgb_msg, "bgr8")
         
         if rgb_image is None or rgb_image.size == 0:
@@ -122,8 +121,30 @@ class ColorObjDetectionNode(Node):
 
         for tag in tags:
             tag_name = self.tag_id_to_name.get(tag.tag_id, "Unknown Tag")
+            self.get_logger().info(f"Shown {tag_name} with ID number:{tag.tag_id}")
+            #print(f"Detected AprilTag with ID: {tag.tag_id}")  # Print the ID of detected AprilTag
+            cv2.polylines(rgb_image, [np.array(tag.corners).astype(int)], isClosed=True, color=(0, 255, 0), thickness=2)
+            tag_center = np.array(tag.center).astype(int)
+            cv2.circle(rgb_image, tuple(tag_center), 5, (0, 255, 0), thickness=-1)
+            
+            if image is not None:
+            # Save the image
+                success = cv2.imwrite('output.png', image)
+                if success:
+                    print('Image successfully saved to output.png')
+                    cv2.imshow('Robbie', image)
+                    cv2.waitKey(0)
+            
+                else:
+                        print('Failed to save image')
+            else:
+                print('Failed to load the image')
+
+        '''
+        for tag in tags:
+            tag_name = self.tag_id_to_name.get(tag.tag_id, "Unknown Tag")
             self.get_logger().info(f"Detected {tag_name} with ID number:{tag.tag_id}")
-            print(f"Detected AprilTag with ID: {tag.tag_id}")  # Print the ID of detected AprilTag
+            #print(f"Detected AprilTag with ID: {tag.tag_id}")  # Print the ID of detected AprilTag
             cv2.polylines(rgb_image, [np.array(tag.corners).astype(int)], isClosed=True, color=(0, 255, 0), thickness=2)
             tag_center = np.array(tag.center).astype(int)
             cv2.circle(rgb_image, tuple(tag_center), 5, (0, 255, 0), thickness=-1)
@@ -133,8 +154,8 @@ class ColorObjDetectionNode(Node):
                     cv2.imshow('Image Window', image)
                     cv2.waitKey(0)
                 else:
-                    print("Image is empty or not loaded.")
-                
+                    print("Image is empty or not loaded.")                    
+         '''       
          ##############################################################3
                 
 
