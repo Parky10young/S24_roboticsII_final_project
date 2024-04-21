@@ -14,7 +14,7 @@ from pupil_apriltags import Detector
 from tf2_ros import TransformException, Buffer, TransformListener
 import sys
 
-image = cv2.imread('test.jpg')
+image =  cv2.imread('/root/codes/gr3/src/object_detection/object_detection/test.jpg')
 
 # Functions for quaternion and rotation matrix conversion
 # Code adapted from: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
@@ -119,6 +119,7 @@ class ColorObjDetectionNode(Node):
         tags = self.at_detector.detect(gray_image)
         print("tags")
 
+        '''
         for tag in tags:
             tag_name = self.tag_id_to_name.get(tag.tag_id, "Unknown Tag")
             self.get_logger().info(f"Shown {tag_name} with ID number:{tag.tag_id}")
@@ -129,7 +130,8 @@ class ColorObjDetectionNode(Node):
             
             if image is not None:
             # Save the image
-                success = cv2.imwrite('output.png', image)
+                success = cv2.imwrite('output_image.png', image)
+                cv2.imshow('output_image', image)
                 if success:
                     print('Image successfully saved to output.png')
                     cv2.imshow('Robbie', image)
@@ -151,11 +153,12 @@ class ColorObjDetectionNode(Node):
             if tag.tag_id == 0:
                 print("We found Robbie!")
                 if image is not None and image.size > 0:
-                    cv2.imshow('Image Window', image)
+                    success = cv2.imwrite('output_image.png', image)
+                    cv2.imshow('output', image)
                     cv2.waitKey(0)
                 else:
                     print("Image is empty or not loaded.")                    
-         '''       
+                
          ##############################################################3
                 
 
