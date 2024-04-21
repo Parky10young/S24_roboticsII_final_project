@@ -11,7 +11,7 @@ Yunyoung Park, RIN 662054365
 **Docker**: Open/access a docker container via a terminal (VNC or SSH)
 Run a docker container or access (execute) a running docker container, then build your work space.
 
-Install pupil_apriltags inside the docker for Detector
+Install pupil_apriltags inside the docker to detect apriltags. (tagStandard41h12)
 ```
 pip3 install pupil-apriltags
 ```
