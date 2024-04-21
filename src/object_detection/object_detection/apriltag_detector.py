@@ -101,7 +101,7 @@ class ColorObjDetectionNode(Node):
         param_color_high = np.array(self.get_parameter('color_high').get_parameter_value().integer_array_value, dtype=np.uint8)
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
-        print(param_color_low, param_color_high)
+        #print(param_color_low, param_color_high)
 
 
 
