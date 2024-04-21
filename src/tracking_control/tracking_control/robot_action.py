@@ -27,12 +27,7 @@ class WaypointPublisher(Node):
             waypoint.data = [3.0,3.0,np.pi/2]
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
-            self.i == 1
-            """
-            if  current_position_callback(self, msg)== "Arrived":
-                self.i = 0
-                return
-                """
+            self.i == 2
             return
             
         #go to start
@@ -41,14 +36,17 @@ class WaypointPublisher(Node):
             waypoint.data = [0.0,0.0,0.0]
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
-            self.i = 0
-            """
-            if  curr_pos== "Arrived":
+            self.i = 3
+            return
+        #change waypoint
+        else:
+            if  self.i == 2 and current_position_callback(self, msg)== "Arrived":
+                self.i = 0
+                return
+            elif self.i == 3 and current_position_callback(self, msg)== "Arrived":
                 self.i = 1
                 return
             return
-            """
-
         
     def current_position_callback(self, msg):
         #check if robot has arrived to waypoint

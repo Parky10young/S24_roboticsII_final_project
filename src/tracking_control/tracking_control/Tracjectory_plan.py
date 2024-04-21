@@ -6,6 +6,7 @@ from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
+from nav2_msgs.action import FollowWaypoints
 import numpy as np
 
 
@@ -19,7 +20,8 @@ class Nav2TrajectoryPlanner(Node):
 
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
-        self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
+        self.goal = None
+        #self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
 
         #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
         self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
@@ -31,6 +33,11 @@ class Nav2TrajectoryPlanner(Node):
         initial_pose.pose.position.y = 0.0  # Set the initial y position
         initial_pose.pose.orientation = self.quaternion_from_euler(0.0, 0.0, 0.0)  # Set the initial orientation (roll, pitch, yaw)
         self.initial_pose_publisher.publish(initial_pose)
+
+
+        
+        if self.goal != None :
+            self.send_goal(self.goal[0],self.goal[1],self.goal[2])
 
     def map_callback(self, msg):
         self.map_data = msg
@@ -48,11 +55,11 @@ class Nav2TrajectoryPlanner(Node):
         x = msg.data[0]
         y = msg.data[1]
         yaw = msg.data[2]
-        print("target position")
-        print("X:",x,"y:",y,"yaw:",yaw)
+        print("X:",x,"y",y)
+        
 
 
-        #self.send_goal(x,y,yaw)
+        self.send_goal = (x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
@@ -96,16 +103,13 @@ class Nav2TrajectoryPlanner(Node):
 
         get_result_future = goal_handle.get_result_async()
         get_result_future.add_done_callback(self.get_result_callback)
-        print("navigation complete")
+        
 
     def get_result_callback(self, future):
         result = future.result().result
-        # if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
-        #     self.get_logger().info('Navigation succeeded')
-        #     self.publish_status('Navigation succeeded')
-        # else:
-        #     self.get_logger().error('Navigation failed')
-        #     self.publish_status('Navigation failed')
+        print(result.result)
+        print("navigation complete")
+        self.publish_status('Arrived')
 
     
 
@@ -120,13 +124,13 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    # goal_x = 1.0
-    # goal_y = 2.0
-    # goal_theta = 0.0
+    goal_x = 0.0
+    goal_y = 0.0
+    goal_theta = 0.0
     print("Map data recived")
 
     # Send the goal to Nav2
-    #node.send_goal(goal_x, goal_y, goal_theta)
+    node.send_goal(goal_x, goal_y, goal_theta)
 
     rclpy.spin(node)
     node.destroy_node()
