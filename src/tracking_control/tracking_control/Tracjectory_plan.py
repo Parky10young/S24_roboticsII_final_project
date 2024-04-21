@@ -22,7 +22,7 @@ class Nav2TrajectoryPlanner(Node):
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
         self.goal = None
-        #self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
+        self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
 
         #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
         self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
