@@ -67,7 +67,7 @@ class Nav2TrajectoryPlanner(Node):
         
 
 
-        self.send_goal = (x,y,yaw)
+        self.send_goal(x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
