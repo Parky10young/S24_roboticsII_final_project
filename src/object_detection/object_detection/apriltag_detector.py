@@ -14,7 +14,7 @@ from pupil_apriltags import Detector
 from tf2_ros import TransformException, Buffer, TransformListener
 import sys
 
-image = cv2.imread('/root/codes/gr3/test.jpg')
+image = cv2.imread('/root/codes/gr3/src/object_detection/test.jpg')
 
 # Functions for quaternion and rotation matrix conversion
 # Code adapted from: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
@@ -42,7 +42,7 @@ class ColorObjDetectionNode(Node):
         self.get_logger().info('\r\nColor Object Detection Node Started')
         
 
-        ################# april#####################################
+        ################# april tag #####################################
         # Initialize AprilTag detector
         self.at_detector = Detector(
             families='tagStandard41h12',
@@ -54,7 +54,7 @@ class ColorObjDetectionNode(Node):
             debug=False
         )
 
-        # Tag ID to name mapping
+        # Tag ID to name mapping: chage inside "__"
         self.tag_id_to_name = {
             0: "Robbie",
             1: "Obstacle",
