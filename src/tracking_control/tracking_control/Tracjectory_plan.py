@@ -20,7 +20,7 @@ class Nav2TrajectoryPlanner(Node):
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
         self.goal = None
-        self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
+        #self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
 
         #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
         self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
@@ -125,13 +125,13 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    # goal_x = 1.0
-    # goal_y = 2.0
-    # goal_theta = 0.0
+    goal_x = 1.0
+    goal_y = 2.0
+    goal_theta = 0.0
     print("Map data recived")
 
     # Send the goal to Nav2
-    #node.send_goal(goal_x, goal_y, goal_theta)
+    node.send_goal(goal_x, goal_y, goal_theta)
 
     rclpy.spin(node)
     node.destroy_node()
