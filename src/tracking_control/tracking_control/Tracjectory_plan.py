@@ -19,6 +19,7 @@ class Nav2TrajectoryPlanner(Node):
 
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
+        self.goal = None
         self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
 
         #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
@@ -31,6 +32,9 @@ class Nav2TrajectoryPlanner(Node):
         initial_pose.pose.position.y = 0.0  # Set the initial y position
         initial_pose.pose.orientation = self.quaternion_from_euler(0.0, 0.0, 0.0)  # Set the initial orientation (roll, pitch, yaw)
         self.initial_pose_publisher.publish(initial_pose)
+
+        if self.goal != None:
+            self.send_goal(self.goal[0],self.goal[1],self.goal[2])
 
     def map_callback(self, msg):
         self.map_data = msg
@@ -52,7 +56,7 @@ class Nav2TrajectoryPlanner(Node):
         print("X:",x,"y:",y,"yaw:",yaw)
 
 
-        #self.send_goal(x,y,yaw)
+        self.goal = (x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
@@ -100,6 +104,7 @@ class Nav2TrajectoryPlanner(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
+        print(NavigateToPose.Result)
         # if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
         #     self.get_logger().info('Navigation succeeded')
         #     self.publish_status('Navigation succeeded')
