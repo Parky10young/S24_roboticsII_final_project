@@ -101,7 +101,7 @@ class ColorObjDetectionNode(Node):
         param_color_high = np.array(self.get_parameter('color_high').get_parameter_value().integer_array_value, dtype=np.uint8)
         param_object_size_min = self.get_parameter('object_size_min').get_parameter_value().integer_value
         
-        print(param_color_low, param_color_high)
+        #print(param_color_low, param_color_high)
 
 
 
@@ -169,7 +169,7 @@ class ColorObjDetectionNode(Node):
             detected_obj_pose = PoseStamped()
             detected_obj_pose.header.frame_id = 'base_footprint'
             detected_obj_pose.header.stamp = rgb_msg.header.stamp
-            detected_obj_posse.pose.position.x = cp_robot[0]
+            detected_obj_pose.pose.position.x = cp_robot[0]
             detected_obj_pose.pose.position.y = cp_robot[1]
             detected_obj_pose.pose.position.z = cp_robot[2]
             self.pub_detected_obj_pose.publish(detected_obj_pose)
@@ -183,7 +183,7 @@ class ColorObjDetectionNode(Node):
         detect_img_msg = self.br.cv2_to_imgmsg(rgb_image, encoding='bgr8')
         detect_img_msg.header = rgb_msg.header
         self.pub_detected_obj.publish(detect_img_msg)
-        #self.get_logger().info('Publishing: "%s"' % detect_img_msg)
+        
 
 def main(args=None):
     rclpy.init(args=args)
