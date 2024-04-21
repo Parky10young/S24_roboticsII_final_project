@@ -12,9 +12,9 @@ Yunyoung Park, RIN 662054365
 Run a docker container or access (execute) a running docker container, then build your work space.
 
 Install pupil_apriltags inside the docker for Detector
-'''
+```
 pip3 install pupil-apriltags
-'''
+```
 
 ## Activate ROS2 environment
 Activate ROS2 environment to run ROS software
