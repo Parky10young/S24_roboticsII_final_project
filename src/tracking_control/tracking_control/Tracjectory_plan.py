@@ -126,13 +126,13 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 0.0
-    goal_y = 0.0
-    goal_theta = 0.0
+    # goal_x = 0.0
+    # goal_y = 0.0
+    # goal_theta = 0.0
     print("Map data recived")
 
     # Send the goal to Nav2
-    node.send_goal(goal_x, goal_y, goal_theta)
+    #node.send_goal(goal_x, goal_y, goal_theta)
 
     rclpy.spin(node)
     node.destroy_node()
