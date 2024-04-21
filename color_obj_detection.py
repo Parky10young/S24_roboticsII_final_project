@@ -80,7 +80,8 @@ class ColorObjDetectionNode(Node):
         self.ts = ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth], 10, 0.1)
         # Register the callback to the time synchronizer
         self.ts.registerCallback(self.camera_callback)
-
+        
+    ##############################################################
     def camera_callback(self, rgb_msg, points_msg):
         #self.get_logger().info('Received RGB and Depth Messages')
 
