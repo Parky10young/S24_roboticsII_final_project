@@ -23,7 +23,6 @@ class WaypointPublisher(Node):
         #loop between waypoint 1 and start position
         #go to waypoint 1
         if self.i==1:
-            print("yes")
             waypoint = Float32MultiArray()
             waypoint.data = [3.0,3.0,np.pi/2]
             self.publisher_.publish(waypoint)
@@ -55,6 +54,7 @@ class WaypointPublisher(Node):
         curr_pos = msg.data
 
     def object_pose_callback(self, detected_obj_pose):
+        print("coordinate recieved")
         #print object coordinates 
         '''
          detected_obj_pose.pose.position.x = cp_robot[0]
