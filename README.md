@@ -45,7 +45,7 @@ ros2 launch tracking_control car_camera_pro_bringup_launch.py
 ros2 launch tracking_control car_camera_proplus_bringup_launch.py
 ```
 
-## Robot Teleoeration
+## Robot Teleoperation
 As the hint suggested, the following function can be done by press and/or hold the key.
 
 - Activate/Deactivate autonomous tracking: press space key
