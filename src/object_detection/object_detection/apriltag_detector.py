@@ -14,7 +14,7 @@ from pupil_apriltags import Detector
 from tf2_ros import TransformException, Buffer, TransformListener
 import sys
 
-image = cv2.imread('/root/codes/gr3/src/object_detection/test.jpg')
+image = cv2.imread('/home/codes/gr3/src/object_detection/test.jpg')
 
 # Functions for quaternion and rotation matrix conversion
 # Code adapted from: https://github.com/rpiRobotics/rpi_general_robotics_toolbox_py
