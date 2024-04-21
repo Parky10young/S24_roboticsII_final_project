@@ -207,7 +207,7 @@ class ColorObjDetectionNode(Node):
         detect_img_msg = self.br.cv2_to_imgmsg(rgb_image, encoding='bgr8')
         detect_img_msg.header = rgb_msg.header
         self.pub_detected_obj.publish(detect_img_msg)
-        self.get_logger().info('Publishing: "%s"' % detect_img_msg)
+        self.get_logger().info('Publishing: "%s"' % detected_obj_pose)
         
 
 def main(args=None):
