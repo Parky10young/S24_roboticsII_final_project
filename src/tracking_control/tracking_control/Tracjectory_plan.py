@@ -58,7 +58,7 @@ class Nav2TrajectoryPlanner(Node):
         
 
 
-        self.goal = (x,y,yaw)
+        self.send_goal = (x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
@@ -108,12 +108,7 @@ class Nav2TrajectoryPlanner(Node):
         result = future.result().result
         print(result.result)
         print("navigation complete")
-        if result.result == NavigateToPose.Result.SUCCEEDED:
-            self.get_logger().info('Navigation succeeded')
-            self.publish_status('Navigation succeeded')
-        else:
-            self.get_logger().error('Navigation failed')
-            self.publish_status('Navigation failed')
+        self.publish_status('Arrived')
 
     
 
@@ -128,13 +123,13 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 1.0
-    goal_y = 1.0
-    goal_theta = 0.0
+    # goal_x = 1.0
+    # goal_y = 1.0
+    # goal_theta = 0.0
     print("Map data recived")
 
     # Send the goal to Nav2
-    node.send_goal(goal_x, goal_y, goal_theta)
+    #node.send_goal(goal_x, goal_y, goal_theta)
 
     rclpy.spin(node)
     node.destroy_node()
