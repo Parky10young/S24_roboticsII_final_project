@@ -117,10 +117,11 @@ class ColorObjDetectionNode(Node):
             cv2.polylines(rgb_image, [np.array(tag.corners).astype(int)], isClosed=True, color=(0, 255, 0), thickness=2)
             tag_center = np.array(tag.center).astype(int)
             cv2.circle(rgb_image, tuple(tag_center), 5, (0, 255, 0), thickness=-1)
-            if tag.tag_id = 0:
+            if tag.tag_id == 0:
                 print("We found Robbie!")
                 cv2.imshow('/home/jetson/codes/gr3/test.jpg')
                 cv2.waitKey(0)
+                
 
         hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
         color_mask = cv2.inRange(hsv_image, param_color_low, param_color_high)
