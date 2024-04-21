@@ -28,11 +28,6 @@ class WaypointPublisher(Node):
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
             self.i == 2
-            """
-            if  current_position_callback(self, msg)== "Arrived":
-                self.i = 0
-                return
-                """
             return
             
         #go to start
@@ -41,14 +36,16 @@ class WaypointPublisher(Node):
             waypoint.data = [0.0,0.0,0.0]
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
-            self.i = 0
-            """
-            if  curr_pos== "Arrived":
+            self.i = 3
+            return
+        #change waypoint
+        else:
+            if  self.i == 2 and current_position_callback(self, msg)== "Arrived":
+                self.i = 0
+                return
+            elif self.i == 3 and current_position_callback(self, msg)== "Arrived":
                 self.i = 1
                 return
-                """
-            return
-        else:
             return
         
     def current_position_callback(self, msg):
