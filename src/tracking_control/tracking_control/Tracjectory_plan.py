@@ -17,11 +17,12 @@ class Nav2TrajectoryPlanner(Node):
         self.nav2_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.pub_control_cmd = self.create_publisher(Twist, '/track_cmd_vel', 10)
         self.status_publisher = self.create_publisher(String, '/nav2_status', 10)
+        self.akg_publisher = self.create_publisher(String, '/akg', 10)
 
         self.map_data = None
         self.map_subscriber = self.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
         self.goal = None
-        #self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
+        self.command_subscriber = self.create_subscription(Float32MultiArray, 'waypoint_topic', self.goal_pose_callback, 10)
 
         #self.goal_subscriber = self.create_subscription(PoseStamped, '/goal_pose', self.goal_pose_callback, 10)
         self.initial_pose_publisher = self.create_publisher(PoseStamped, '/initialpose', 10)
@@ -48,6 +49,12 @@ class Nav2TrajectoryPlanner(Node):
         msg.data = status
         self.status_publisher.publish(msg)
 
+
+    def publish_akg(self, status):
+        msg = String()
+        msg.data = status
+        self.akg_publisher.publish(msg)
+
     def goal_pose_callback(self,msg):
     # Extract position
         
@@ -56,10 +63,11 @@ class Nav2TrajectoryPlanner(Node):
         y = msg.data[1]
         yaw = msg.data[2]
         print("X:",x,"y",y)
+        self.publish_akg("ok")
         
 
 
-        self.send_goal = (x,y,yaw)
+        self.send_goal(x,y,yaw)
 
     def send_goal(self, x, y, theta):
         if self.map_data is None:
@@ -124,13 +132,13 @@ def main(args=None):
         rclpy.spin_once(node)
 
     # Set the goal pose (x, y, theta) based on the map data
-    goal_x = 0.0
-    goal_y = 0.0
-    goal_theta = 0.0
+    # goal_x = 0.0
+    # goal_y = 0.0
+    # goal_theta = 0.0
     print("Map data recived")
 
     # Send the goal to Nav2
-    node.send_goal(goal_x, goal_y, goal_theta)
+    #node.send_goal(goal_x, goal_y, goal_theta)
 
     rclpy.spin(node)
     node.destroy_node()
