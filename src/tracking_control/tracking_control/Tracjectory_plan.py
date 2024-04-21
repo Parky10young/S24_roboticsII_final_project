@@ -6,6 +6,7 @@ from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid
 from std_msgs.msg import String
 from std_msgs.msg import Float32MultiArray
+from nav2_msgs.action import FollowWaypoints
 import numpy as np
 
 
@@ -105,14 +106,12 @@ class Nav2TrajectoryPlanner(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
-        print(NavigateToPose.Result.STATUS_SUCCEEDED)
-        print("navigation complete")
-        # if result.status == NavigateToPose.Result.STATUS_SUCCEEDED:
-        #     self.get_logger().info('Navigation succeeded')
-        #     self.publish_status('Navigation succeeded')
-        # else:
-        #     self.get_logger().error('Navigation failed')
-        #     self.publish_status('Navigation failed')
+        if result.status == FollowWaypoints.Result.SUCCEEDED:
+            self.get_logger().info('Navigation succeeded')
+            self.publish_status('Navigation succeeded')
+        else:
+            self.get_logger().error('Navigation failed')
+            self.publish_status('Navigation failed')
 
     
 
