@@ -35,7 +35,7 @@ class Nav2TrajectoryPlanner(Node):
 
 
         
-        if self.goal != None and :
+        if self.goal != None :
             self.send_goal(self.goal[0],self.goal[1],self.goal[2])
 
     def map_callback(self, msg):
@@ -54,8 +54,7 @@ class Nav2TrajectoryPlanner(Node):
         x = msg.data[0]
         y = msg.data[1]
         yaw = msg.data[2]
-        print("target position")
-        print("X:",x,"y:",y,"yaw:",yaw)
+        
 
 
         self.goal = (x,y,yaw)
