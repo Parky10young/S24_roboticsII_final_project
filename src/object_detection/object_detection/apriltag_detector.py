@@ -169,7 +169,7 @@ class ColorObjDetectionNode(Node):
             detected_obj_pose = PoseStamped()
             detected_obj_pose.header.frame_id = 'base_footprint'
             detected_obj_pose.header.stamp = rgb_msg.header.stamp
-            detected_obj_posse.pose.position.x = cp_robot[0]
+            detected_obj_pose.pose.position.x = cp_robot[0]
             detected_obj_pose.pose.position.y = cp_robot[1]
             detected_obj_pose.pose.position.z = cp_robot[2]
             self.pub_detected_obj_pose.publish(detected_obj_pose)
