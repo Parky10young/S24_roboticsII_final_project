@@ -27,7 +27,7 @@ class WaypointPublisher(Node):
             waypoint.data = [3.0,3.0,np.pi/2]
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
-            self.i == 1
+            self.i == 2
             """
             if  current_position_callback(self, msg)== "Arrived":
                 self.i = 0
@@ -46,9 +46,10 @@ class WaypointPublisher(Node):
             if  curr_pos== "Arrived":
                 self.i = 1
                 return
+                """
             return
-            """
-
+        else:
+            return
         
     def current_position_callback(self, msg):
         #check if robot has arrived to waypoint
