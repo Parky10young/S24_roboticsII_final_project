@@ -114,6 +114,9 @@ class ColorObjDetectionNode(Node):
         print(f"Image shape: {rgb_image.shape}")
 
         gray_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2GRAY)
+
+
+        ##############  April Tag  ######################################3
         tags = self.at_detector.detect(gray_image)
         print("tags")
 
@@ -132,7 +135,7 @@ class ColorObjDetectionNode(Node):
                 else:
                     print("Image is empty or not loaded.")
                 
-
+         ##############################################################3
                 
 
         hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
