@@ -9,14 +9,7 @@ Yunyoung Park, RIN 662054365
 ```
 
 **Docker**: Open/access a docker container via a terminal (VNC or SSH)
-Run a docker container
-```
-./run_docker.sh
-```
-or access (execute) a running docker container
-```
-./exec_docker.sh
-```
+Run a docker container or access (execute) a running docker container, then build your work space.
 
 Install pupil_apriltags inside the docker for Detector
 '''
