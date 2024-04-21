@@ -20,20 +20,20 @@ class WaypointPublisher(Node):
         self.current_pos_subscriber = self.create_subscription(String, '/nav2_status', self.current_position_callback, 10)
         self.current_pos_subscriber = self.create_subscription(String, '/akg', self.acknowledgement_callback, 10)
         self.object_pose_subscriber = self.create_subscription(PoseStamped, '/detected_color_object_pose', self.object_pose_callback, 10)
-
+        
     def timer_callback(self):
         #loop between waypoint 1 and start position
         #go to waypoint 1
-        if self.akg!="ok":
+        if self.akg !="ok":
             waypoint = Float32MultiArray()
-            waypoint.data = [3.0,3.0,np.pi/2]
+            waypoint.data = [1.0,1.0,np.pi/2]
             self.publisher_.publish(waypoint)
             self.get_logger().info('Publishing: "%s"' % waypoint.data)
             self.i == 2
             return
             
         #go to start
-        elif self.i==0:
+        elif self.curr_pose == "Arrived" and self.akg == "ok":
             waypoint = Float32MultiArray()
             waypoint.data = [0.0,0.0,0.0]
             self.publisher_.publish(waypoint)
