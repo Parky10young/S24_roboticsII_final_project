@@ -37,7 +37,7 @@ def q2R(q):
 class ColorObjDetectionNode(Node):
     def __init__(self):
         super().__init__('color_obj_detection_node')
-        self.get_logger().info('Color Object Detection Node Started')
+        self.get_logger().info('\r\nColor Object Detection Node Started')
         
         # Initialize AprilTag detector
         self.at_detector = Detector(
@@ -112,11 +112,15 @@ class ColorObjDetectionNode(Node):
 
         for tag in tags:
             tag_name = self.tag_id_to_name.get(tag.tag_id, "Unknown Tag")
-            self.get_logger().info(f"Detected {tag_name} with ID {tag.tag_id}")
+            self.get_logger().info(f"Detected {tag_name} with ID number:{tag.tag_id}")
             print(f"Detected AprilTag with ID: {tag.tag_id}")  # Print the ID of detected AprilTag
             cv2.polylines(rgb_image, [np.array(tag.corners).astype(int)], isClosed=True, color=(0, 255, 0), thickness=2)
             tag_center = np.array(tag.center).astype(int)
             cv2.circle(rgb_image, tuple(tag_center), 5, (0, 255, 0), thickness=-1)
+            if tag.tag_id = 0:
+                print("We found Robbie!")
+                cv2.imshow('/home/jetson/codes/gr3/test.jpg')
+                cv2.waitKey(0)
 
         hsv_image = cv2.cvtColor(rgb_image, cv2.COLOR_BGR2HSV)
         color_mask = cv2.inRange(hsv_image, param_color_low, param_color_high)
