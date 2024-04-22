@@ -27,6 +27,23 @@ source install/setup.bash
 
 ## Launch tracking nodes!
 
+## run the path planning we need to start the mapping node: 
+```
+ros2 launch yahboomcar_nav map_gmapping_launch.py
+```
+## save the map using 
+```
+ros2 launch yahboomcar_nav save_map_launch.py
+```
+## start the nav2 pack
+```
+ros2 launch nav2_bringup bringup_launch.py map:=/root/yahboomcar_ros2_ws/yahboomcar_ws/src/yahboomcar_nav/maps/yahboomcar2.yaml
+```
+## Then start Tracjectory_node
+```
+ros2 run tracking_control Trajectory Tracjectory_node
+```
+
 ### Color Detection and Tracking Node
 ```
 ros2 launch tracking_control tracking_color_object_launch.py
@@ -45,12 +62,3 @@ ros2 launch tracking_control car_camera_pro_bringup_launch.py
 ros2 launch tracking_control car_camera_proplus_bringup_launch.py
 ```
 
-## Robot Teleoperation
-As the hint suggested, the following function can be done by press and/or hold the key.
-
-- Activate/Deactivate autonomous tracking: press space key
-- Moving linear in a direction: press and hold `u    i    o` (left forward, forward, right forward), `j    l` (left right), `m    ,    .` (left backward, backward, right backward)
-- Turning counterclockwise/clockwise: `t`/`y`
-- Stop the robot: press `k` or anything else
-
-Note that the keyboard teleoperation has higher priority than the autonomous tracking command. In addition, deactivate (press space) the robot if you think the robot is (almost) out of control to protect the robot for potential damages.
